@@ -1,0 +1,23 @@
+{
+  "name": "nuxt-map-app",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "nuxt dev",
+    "build": "nuxt build",
+    "preview": "nuxt preview",
+    "generate": "nuxt generate",
+    "typecheck": "nuxt typecheck"
+  },
+  "devDependencies": {
+    "@vite-pwa/nuxt": "^0.10.5",
+    "nuxt": "^3.15.0",
+    "vue-tsc": "^2.2.0"
+  },
+  "dependencies": {
+    "@turf/distance": "^6.5.0",
+    "maplibre-gl": "^2.4.0",
+    "maplibre-gl-gsi-terrain": "^0.0.2",
+    "maplibre-gl-opacity": "^1.4.0"
+  }
+}
