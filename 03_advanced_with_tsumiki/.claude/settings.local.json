@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cp -r \"c:/Users/tomoa/dev/location-tech-sample-v1/03_advanced_with_tsumiki/public/skhb\" \"c:/Users/tomoa/dev/location-tech-sample-v1/03_advanced_with_tsumiki/nuxt-map-app/public/skhb\")",
+      "Bash(cp \"c:/Users/tomoa/dev/location-tech-sample-v1/03_advanced_with_tsumiki/public/icon\"*.png \"c:/Users/tomoa/dev/location-tech-sample-v1/03_advanced_with_tsumiki/nuxt-map-app/public/\")",
+      "Bash(npm install *)"
+    ]
+  }
+}
