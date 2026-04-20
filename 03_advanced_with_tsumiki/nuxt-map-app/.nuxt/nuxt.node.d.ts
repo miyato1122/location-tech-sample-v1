@@ -1,6 +1,6 @@
+/// <reference types="@vite-pwa/nuxt" />
 /// <reference types="@nuxt/devtools" />
 /// <reference types="@nuxt/telemetry" />
-/// <reference types="@vite-pwa/nuxt" />
 /// <reference path="types/nitro-layouts.d.ts" />
 /// <reference path="types/modules.d.ts" />
 /// <reference path="types/runtime-config.d.ts" />

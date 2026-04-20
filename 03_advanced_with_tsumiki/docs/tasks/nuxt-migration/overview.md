@@ -77,7 +77,7 @@ TASK-0002 → TASK-0006〜0011（全composables）
 
 ### タスク一覧
 
-- [ ] [TASK-0006: useMap composable実装](TASK-0006.md) - 8h (TDD) 🔵
+- [x] [TASK-0006: useMap composable実装](TASK-0006.md) - 8h (TDD) 🔵 ✅ 完了 (2026-04-20)
 - [ ] [TASK-0007: useHazardLayers composable実装](TASK-0007.md) - 8h (TDD) 🔵
 - [ ] [TASK-0008: useShelterLayers composable実装](TASK-0008.md) - 8h (TDD) 🔵
 - [ ] [TASK-0009: useGeolocation composable実装](TASK-0009.md) - 6h (TDD) 🔵
