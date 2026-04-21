@@ -1,0 +1,84 @@
+/* ================================================
+   背景地図切り替えコントロール
+   命名規則:
+     .basemap-control        - 左下セレクターコンテナ
+     .basemap-control__btn   - 各背景地図ボタン
+     .basemap-control__btn--active - 選択中ボタン
+     .basemap-attribution    - 出典表示エリア
+     .basemap-error          - 失敗表示エリア
+================================================ */
+.basemap-control {
+    position: absolute;
+    bottom: 30px;
+    left: 10px;
+    z-index: 1;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 4px;
+    padding: 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+}
+
+.basemap-control__btn {
+    display: block;
+    padding: 4px 8px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-size: 0.8rem;
+    text-align: left;
+    border-radius: 3px;
+    white-space: nowrap;
+}
+
+.basemap-control__btn:hover {
+    background: rgba(0, 0, 0, 0.08);
+}
+
+.basemap-control__btn--active {
+    font-weight: bold;
+    background: rgba(0, 100, 200, 0.15);
+}
+
+.basemap-attribution {
+    position: absolute;
+    bottom: 6px;
+    left: 10px;
+    z-index: 1;
+    font-size: 0.65rem;
+    color: #555;
+    pointer-events: none;
+}
+
+.basemap-error {
+    position: absolute;
+    bottom: 30px;
+    left: 130px;
+    z-index: 1;
+    background: rgba(200, 0, 0, 0.85);
+    color: #fff;
+    font-size: 0.75rem;
+    padding: 3px 8px;
+    border-radius: 3px;
+    pointer-events: none;
+}
+
+/* 狭画面対応 */
+@media (max-width: 480px) {
+    .basemap-control {
+        bottom: 60px;
+        max-width: 110px;
+    }
+
+    .basemap-control__btn {
+        font-size: 0.75rem;
+        padding: 3px 6px;
+    }
+
+    .basemap-attribution {
+        bottom: 2px;
+        font-size: 0.6rem;
+    }
+}

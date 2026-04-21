@@ -9,6 +9,12 @@
     </head>
     <body style="margin: 0">
         <div id="map" style="height: 100vh"></div>
+        <!-- 背景地図切り替えUI受け皿 -->
+        <div id="basemap-control" class="basemap-control"></div>
+        <!-- 出典表示エリア -->
+        <div id="basemap-attribution" class="basemap-attribution"></div>
+        <!-- 失敗表示エリア（初期は非表示） -->
+        <div id="basemap-error" class="basemap-error" style="display:none"></div>
         <script type="module" src="./main.js"></script>
         <script>
             // PWA: ServiceWorker読み込み
