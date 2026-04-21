@@ -11,6 +11,13 @@ import distance from '@turf/distance';
 
 // 地理院標高タイルをMapLibre GL JSで利用するためのモジュール
 import { useGsiTerrainSource } from 'maplibre-gl-gsi-terrain';
+import { BASEMAP_CATALOG } from './basemapCatalog.js';
+
+const basemapSources = Object.fromEntries(
+    BASEMAP_CATALOG.map((item) => [item.sourceId, item.source]),
+);
+
+const basemapLayers = BASEMAP_CATALOG.map((item) => item.layer);
 
 const map = new maplibregl.Map({
     container: 'map', // div要素のid
@@ -23,14 +30,7 @@ const map = new maplibregl.Map({
         version: 8,
         sources: {
             // 背景地図ソース
-            osm: {
-                type: 'raster',
-                tiles: ['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],
-                maxzoom: 19,
-                tileSize: 256,
-                attribution:
-                    '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-            },
+            ...basemapSources,
             // 重ねるハザードマップここから
             hazard_flood: {
                 type: 'raster',
@@ -124,11 +124,7 @@ const map = new maplibregl.Map({
         },
         layers: [
             // 背景地図レイヤー
-            {
-                id: 'osm-layer',
-                source: 'osm',
-                type: 'raster',
-            },
+            ...basemapLayers,
             // 重ねるハザードマップここから
             {
                 id: 'hazard_flood-layer',
