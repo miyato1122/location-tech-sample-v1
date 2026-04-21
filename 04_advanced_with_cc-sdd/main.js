@@ -12,6 +12,9 @@ import distance from '@turf/distance';
 // 地理院標高タイルをMapLibre GL JSで利用するためのモジュール
 import { useGsiTerrainSource } from 'maplibre-gl-gsi-terrain';
 import { BASEMAP_CATALOG } from './basemapCatalog.js';
+import { createBasemapErrorChannel } from './basemapErrorChannel.js';
+import { createBasemapToggleService } from './basemapToggleService.js';
+import { mountBasemapControl } from './basemapControl.js';
 
 const basemapSources = Object.fromEntries(
     BASEMAP_CATALOG.map((item) => [item.sourceId, item.source]),
@@ -361,6 +364,9 @@ const map = new maplibregl.Map({
     },
 });
 
+const basemapErrorChannel = createBasemapErrorChannel();
+const basemapToggleService = createBasemapToggleService(map, basemapErrorChannel);
+
 /**
  * 現在選択されている指定緊急避難場所レイヤー(skhb)を特定しそのfilter条件を返す
  */
@@ -422,6 +428,16 @@ geolocationControl.on('geolocate', (e) => {
 
 // マップの初期ロード完了時に発火するイベントを定義
 map.on('load', () => {
+    const basemapControlEl = document.getElementById('basemap-control');
+    const basemapAttributionEl = document.getElementById('basemap-attribution');
+    if (basemapControlEl && basemapAttributionEl) {
+        mountBasemapControl({
+            container: basemapControlEl,
+            attributionEl: basemapAttributionEl,
+            service: basemapToggleService,
+        });
+    }
+
     // 背景地図・重ねるタイル地図のコントロール
     const opacity = new OpacityControl({
         baseLayers: {
