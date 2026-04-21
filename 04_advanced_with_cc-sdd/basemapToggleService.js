@@ -12,9 +12,10 @@ import { BASEMAP_CATALOG, BASEMAP_BY_ID } from './basemapCatalog.js';
 /**
  * BasemapToggleService を生成して返す
  * @param {import('maplibre-gl').Map} map
- * @returns {{ switchBasemap: (target: string) => BasemapSwitchResult, getCurrentBasemap: () => BasemapId }}
+ * @param {{ setError: (layerId: string, message: string) => void, clearError: () => void } | null} [errorChannel]
+ * @returns {{ switchBasemap: (target: string) => BasemapSwitchResult, getCurrentBasemap: () => BasemapId, notifyError: (layerId: string, message: string) => void, notifyRecovery: () => void }}
  */
-export function createBasemapToggleService(map) {
+export function createBasemapToggleService(map, errorChannel = null) {
     let currentId = /** @type {BasemapId} */ ('osm');
 
     /**
@@ -47,5 +48,23 @@ export function createBasemapToggleService(map) {
         return currentId;
     }
 
-    return { switchBasemap, getCurrentBasemap };
+    /**
+     * 背景地図の読み込み/描画失敗を通知する
+     * 現在背景は変更しない（安定状態を維持）
+     * @param {string} layerId
+     * @param {string} message
+     */
+    function notifyError(layerId, message) {
+        if (errorChannel) errorChannel.setError(layerId, message);
+    }
+
+    /**
+     * 背景地図の回復を通知する
+     */
+    function notifyRecovery() {
+        if (errorChannel) errorChannel.clearError();
+    }
+
+    return { switchBasemap, getCurrentBasemap, notifyError, notifyRecovery };
 }
+
