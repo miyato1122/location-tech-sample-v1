@@ -45,6 +45,11 @@ MapLibre GL のフルページマップを主UIとするシングルページア
 # プレビュー:   npm run preview
 ```
 
+### ビルド成果物の運用
+- `dist/` はローカル確認・配布用の生成物として扱い、原則 Git にはコミットしない
+- 再現可能性は `package.json` とソースコードで担保し、必要時に `npm run build` で再生成する
+- レビュー対象は `main.js`・`style.css`・`index.html`・`public/` 配下のソース資産を優先する
+
 ## 主要な技術的判断
 
 - **レイヤーのデフォルトは `visibility: 'none'`**: ハザード・避難施設レイヤーはすべてデフォルト非表示。`OpacityControl` が唯一の表示切替手段
