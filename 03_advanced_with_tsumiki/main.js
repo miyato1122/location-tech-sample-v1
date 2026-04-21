@@ -31,6 +31,23 @@ const map = new maplibregl.Map({
                 attribution:
                     '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
             },
+            // 背景地図ソース（地理院）
+            gsi_std: {
+                type: 'raster',
+                tiles: ['https://cyberjapandata.gsi.go.jp/xyz/std/{z}/{x}/{y}.png'],
+                maxzoom: 18,
+                tileSize: 256,
+                attribution:
+                    '<a href="https://maps.gsi.go.jp/development/ichiran.html" target="_blank">国土地理院</a>',
+            },
+            gsi_photo: {
+                type: 'raster',
+                tiles: ['https://cyberjapandata.gsi.go.jp/xyz/seamlessphoto/{z}/{x}/{y}.jpg'],
+                maxzoom: 18,
+                tileSize: 256,
+                attribution:
+                    '<a href="https://maps.gsi.go.jp/development/ichiran.html" target="_blank">国土地理院</a>',
+            },
             // 重ねるハザードマップここから
             hazard_flood: {
                 type: 'raster',
@@ -128,6 +145,19 @@ const map = new maplibregl.Map({
                 id: 'osm-layer',
                 source: 'osm',
                 type: 'raster',
+                layout: { visibility: 'visible' },
+            },
+            {
+                id: 'gsi-std-layer',
+                source: 'gsi_std',
+                type: 'raster',
+                layout: { visibility: 'none' },
+            },
+            {
+                id: 'gsi-photo-layer',
+                source: 'gsi_photo',
+                type: 'raster',
+                layout: { visibility: 'none' },
             },
             // 重ねるハザードマップここから
             {
@@ -424,6 +454,66 @@ geolocationControl.on('geolocate', (e) => {
     userLocation = [e.coords.longitude, e.coords.latitude];
 });
 
+/**
+ * 背景地図切り替えコントロール
+ * MapLibre GL JS の IControl インターフェースを実装
+ */
+class BasemapSwitcherControl {
+    constructor() {
+        this._currentBasemap = 'osm';
+        this._basemaps = [
+            { id: 'osm',       layerId: 'osm-layer',       label: 'OSM' },
+            { id: 'gsi_std',   layerId: 'gsi-std-layer',   label: '地理院地図' },
+            { id: 'gsi_photo', layerId: 'gsi-photo-layer', label: '航空写真' },
+        ];
+    }
+
+    onAdd(map) {
+        this._map = map;
+        this._container = document.createElement('div');
+        this._container.className = 'maplibregl-ctrl maplibregl-ctrl-group basemap-switcher';
+        this._buildUI();
+        return this._container;
+    }
+
+    onRemove() {
+        this._container.parentNode.removeChild(this._container);
+        this._map = undefined;
+    }
+
+    _buildUI() {
+        this._basemaps.forEach(({ id, label }) => {
+            const itemEl = document.createElement('label');
+            itemEl.className = 'basemap-switcher-item';
+
+            const radio = document.createElement('input');
+            radio.type = 'radio';
+            radio.name = 'basemap';
+            radio.value = id;
+            radio.checked = id === this._currentBasemap;
+            radio.addEventListener('change', () => this._switchBasemap(id));
+
+            itemEl.appendChild(radio);
+            itemEl.appendChild(document.createTextNode(label));
+            this._container.appendChild(itemEl);
+        });
+    }
+
+    _switchBasemap(id) {
+        if (id === this._currentBasemap) return;
+
+        this._basemaps.forEach(({ layerId }) => {
+            this._map.setLayoutProperty(layerId, 'visibility', 'none');
+        });
+
+        const target = this._basemaps.find((b) => b.id === id);
+        if (target) {
+            this._map.setLayoutProperty(target.layerId, 'visibility', 'visible');
+            this._currentBasemap = id;
+        }
+    }
+}
+
 // マップの初期ロード完了時に発火するイベントを定義
 map.on('load', () => {
     // 背景地図・重ねるタイル地図のコントロール
@@ -453,6 +543,9 @@ map.on('load', () => {
         },
     });
     map.addControl(opacitySkhb, 'top-right');
+
+    // 背景地図切り替えコントロール
+    map.addControl(new BasemapSwitcherControl(), 'bottom-left');
 
     // 地図上をクリックした際のイベント
     map.on('click', (e) => {

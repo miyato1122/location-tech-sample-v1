@@ -1,0 +1,21 @@
+/* 背景地図切り替えコントロール */
+.basemap-switcher {
+    background: #fff;
+    padding: 4px 8px;
+}
+
+.basemap-switcher-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 0;
+    font-size: 12px;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.basemap-switcher-item input[type="radio"] {
+    cursor: pointer;
+    margin: 0;
+    accent-color: #1a73e8;
+}
