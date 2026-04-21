@@ -6,7 +6,11 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build --base=./",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test:contract": "node tests/contract/run-contract-tests.mjs",
+    "test:integration": "node tests/integration/run-integration-tests.mjs",
+    "test:unit": "node tests/unit/test-switch-failure-rollback.mjs && node tests/unit/test-basemap-regression.mjs",
+    "quality:gates": "npm run test:contract && npm run test:integration && npm run test:unit && npm run build"
   },
   "devDependencies": {
     "vite": "^3.2.0"

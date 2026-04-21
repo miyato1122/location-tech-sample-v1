@@ -1,6 +1,7 @@
 // MapLibre GL JSの読み込み
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
+import './style.css';
 
 // OpacityControlプラグインの読み込み
 import OpacityControl from 'maplibre-gl-opacity';
@@ -11,9 +12,29 @@ import distance from '@turf/distance';
 
 // 地理院標高タイルをMapLibre GL JSで利用するためのモジュール
 import { useGsiTerrainSource } from 'maplibre-gl-gsi-terrain';
+import { BASEMAP_TYPES, BASEMAP_TYPE_LIST } from './src/basemap/basemap-types.js';
+import {
+    createDisplayState,
+    nextDisplayState,
+} from './src/basemap/display-state.js';
+import { applyWithRollback } from './src/basemap/state-guard.js';
+import {
+    logBasemapError,
+    notifyBasemapError,
+} from './src/basemap/error-handler.js';
+import { mountBasemapSwitcher, setActiveBasemapButton } from './src/ui/basemap-switcher.js';
+
+const BASEMAP_LAYER_BY_TYPE = {
+    [BASEMAP_TYPES.OSM]: 'osm-layer',
+    [BASEMAP_TYPES.GSI_STD]: 'gsi-std-layer',
+    [BASEMAP_TYPES.GSI_ORTHO]: 'gsi-ortho-layer',
+};
+
+let basemapState = createDisplayState(BASEMAP_TYPES.OSM);
 
 const map = new maplibregl.Map({
     container: 'map', // div要素のid
+    attributionControl: false,
     zoom: 5, // 初期表示のズーム
     center: [138, 37], // 初期表示の中心
     minZoom: 5, // 最小ズーム
@@ -30,6 +51,24 @@ const map = new maplibregl.Map({
                 tileSize: 256,
                 attribution:
                     '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            },
+            gsi_std: {
+                type: 'raster',
+                tiles: [
+                    'https://cyberjapandata.gsi.go.jp/xyz/std/{z}/{x}/{y}.png',
+                ],
+                minzoom: 5,
+                maxzoom: 18,
+                tileSize: 256,
+            },
+            gsi_ortho: {
+                type: 'raster',
+                tiles: [
+                    'https://cyberjapandata.gsi.go.jp/xyz/ort/{z}/{x}/{y}.jpg',
+                ],
+                minzoom: 5,
+                maxzoom: 18,
+                tileSize: 256,
             },
             // 重ねるハザードマップここから
             hazard_flood: {
@@ -128,6 +167,18 @@ const map = new maplibregl.Map({
                 id: 'osm-layer',
                 source: 'osm',
                 type: 'raster',
+            },
+            {
+                id: 'gsi-std-layer',
+                source: 'gsi_std',
+                type: 'raster',
+                layout: { visibility: 'none' },
+            },
+            {
+                id: 'gsi-ortho-layer',
+                source: 'gsi_ortho',
+                type: 'raster',
+                layout: { visibility: 'none' },
             },
             // 重ねるハザードマップここから
             {
@@ -365,6 +416,57 @@ const map = new maplibregl.Map({
     },
 });
 
+const switcherContainer = document.getElementById('basemap-switcher');
+const attributionContainer = document.getElementById('basemap-attribution');
+
+const applyBasemapVisibility = (activeBasemap) => {
+    BASEMAP_TYPE_LIST.forEach((basemapType) => {
+        const layerId = BASEMAP_LAYER_BY_TYPE[basemapType];
+        map.setLayoutProperty(
+            layerId,
+            'visibility',
+            basemapType === activeBasemap ? 'visible' : 'none',
+        );
+    });
+};
+
+const updateAttribution = (text) => {
+    if (attributionContainer) {
+        attributionContainer.textContent = text;
+    }
+};
+
+const syncActiveButton = (basemapType) => {
+    if (switcherContainer) {
+        setActiveBasemapButton(switcherContainer, basemapType);
+    }
+};
+
+const switchBasemap = async (nextBasemap) => {
+    const transition = nextDisplayState(basemapState, nextBasemap);
+    if (!transition.changed) {
+        return;
+    }
+
+    const result = await applyWithRollback(basemapState, async () => {
+        applyBasemapVisibility(transition.state.activeBasemap);
+        updateAttribution(transition.state.activeAttribution);
+        syncActiveButton(transition.state.activeBasemap);
+        return transition.state;
+    });
+
+    if (!result.ok) {
+        applyBasemapVisibility(basemapState.activeBasemap);
+        updateAttribution(basemapState.activeAttribution);
+        syncActiveButton(basemapState.activeBasemap);
+        logBasemapError(result.error, 'switchBasemap');
+        notifyBasemapError('背景地図の切り替えに失敗しました');
+        return;
+    }
+
+    basemapState = result.state;
+};
+
 /**
  * 現在選択されている指定緊急避難場所レイヤー(skhb)を特定しそのfilter条件を返す
  */
@@ -426,6 +528,18 @@ geolocationControl.on('geolocate', (e) => {
 
 // マップの初期ロード完了時に発火するイベントを定義
 map.on('load', () => {
+    if (switcherContainer) {
+        mountBasemapSwitcher(
+            switcherContainer,
+            basemapState.activeBasemap,
+            (nextBasemap) => {
+                void switchBasemap(nextBasemap);
+            },
+        );
+    }
+    applyBasemapVisibility(basemapState.activeBasemap);
+    updateAttribution(basemapState.activeAttribution);
+
     // 背景地図・重ねるタイル地図のコントロール
     const opacity = new OpacityControl({
         baseLayers: {
