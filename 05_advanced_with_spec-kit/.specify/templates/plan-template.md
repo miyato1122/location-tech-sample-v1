@@ -31,7 +31,16 @@
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-[Gates determined based on constitution file]
+- **Defect Prevention Controls Defined**: 失敗系挙動、入力検証、例外処理、回帰
+  防止策を計画に明示していること。
+- **Test-First Strategy Defined**: ユーザーストーリーごとに失敗先行テストと
+  回帰テスト方針を定義していること。
+- **Safe Change Boundaries Defined**: 変更粒度、責務分離、非自明ロジックの
+  根拠記録方針を定義していること。
+- **Traceability and Review Scope Defined**: 変更が要件へ追跡可能で、レビュー
+  単位が小さく保たれていること。
+- **Japanese Documentation Requirement Satisfied**: 仕様・計画・タスク・運用
+  手順の主要文書を日本語で管理する方針を記載していること。
 
 ## Project Structure
 

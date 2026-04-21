@@ -100,6 +100,19 @@
 - **[Entity 1]**: [What it represents, key attributes without implementation]
 - **[Entity 2]**: [What it represents, relationships to other entities]
 
+## Quality Requirements *(mandatory)*
+
+- **QR-001**: Define merge-blocking quality gates (format, lint, static checks, and
+  automated tests) required for this feature.
+- **QR-002**: Define test-first expectations, including failing tests and required
+  regression coverage for bug fixes.
+- **QR-003**: Define defect-prevention controls for input validation, exception
+  handling, and failure-safe behavior.
+- **QR-004**: Define maintainability constraints (readability, module boundaries,
+  and documentation for non-obvious logic).
+- **QR-005**: Define how project documents for this feature are maintained in
+  Japanese, including rationale notes when English terms are required.
+
 ## Success Criteria *(mandatory)*
 
 <!--

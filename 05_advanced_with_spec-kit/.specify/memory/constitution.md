@@ -1,50 +1,86 @@
-# [PROJECT_NAME] Constitution
-<!-- Example: Spec Constitution, TaskFlow Constitution, etc. -->
+<!--
+Sync Impact Report
+- Version change: template -> 1.0.0
+- Modified principles:
+	- Principle 1 placeholder -> I. バグ予防優先
+	- Principle 2 placeholder -> II. テスト先行と回帰防止
+	- Principle 3 placeholder -> III. 可読性と安全な変更境界
+	- Principle 4 placeholder -> IV. 小さく追跡可能な変更
+	- Principle 5 placeholder -> V. 文書の日本語統一
+- Added sections:
+	- 品質基準
+	- 開発フローと品質ゲート
+- Removed sections:
+	- None
+- Templates requiring updates:
+	- ✅ updated: .specify/templates/plan-template.md
+	- ✅ updated: .specify/templates/spec-template.md
+	- ✅ updated: .specify/templates/tasks-template.md
+	- ✅ updated: .specify/templates/commands/*.md (no files present)
+- Follow-up TODOs:
+	- None
+-->
+
+# 05_advanced_with_spec-kit Constitution
 
 ## Core Principles
 
-### [PRINCIPLE_1_NAME]
-<!-- Example: I. Library-First -->
-[PRINCIPLE_1_DESCRIPTION]
-<!-- Example: Every feature starts as a standalone library; Libraries must be self-contained, independently testable, documented; Clear purpose required - no organizational-only libraries -->
+### I. バグ予防優先
+実装判断は常に不具合発生確率の低減を最優先とする。入力値検証、例外系処理、失敗時
+の安全な挙動を必須とし、正常系のみを前提とした実装を禁止する。理由: 本番障害の多く
+は前提漏れと失敗系未定義から発生するため。
 
-### [PRINCIPLE_2_NAME]
-<!-- Example: II. CLI Interface -->
-[PRINCIPLE_2_DESCRIPTION]
-<!-- Example: Every library exposes functionality via CLI; Text in/out protocol: stdin/args → stdout, errors → stderr; Support JSON + human-readable formats -->
+### II. テスト先行と回帰防止
+新機能とバグ修正は、実装前に失敗する自動テストを作成してから実装する。ロジック変更
+には単体テスト、モジュール間の挙動変更には統合または契約テストを必須とする。修正時
+は再発防止用の回帰テストを必ず追加する。理由: 不具合の再混入を最小化するため。
 
-### [PRINCIPLE_3_NAME]
-<!-- Example: III. Test-First (NON-NEGOTIABLE) -->
-[PRINCIPLE_3_DESCRIPTION]
-<!-- Example: TDD mandatory: Tests written → User approved → Tests fail → Then implement; Red-Green-Refactor cycle strictly enforced -->
+### III. 可読性と安全な変更境界
+コードは巧妙さより理解容易性を優先し、関数とモジュールの責務を明確に分離する。非自
+明なロジックには簡潔な根拠を記録し、変更範囲はレビュー可能な粒度に限定する。理由:
+読み違い由来の不具合を減らすため。
 
-### [PRINCIPLE_4_NAME]
-<!-- Example: IV. Integration Testing -->
-[PRINCIPLE_4_DESCRIPTION]
-<!-- Example: Focus areas requiring integration tests: New library contract tests, Contract changes, Inter-service communication, Shared schemas -->
+### IV. 小さく追跡可能な変更
+変更は要件またはユーザーストーリーに直接対応する小さな単位で実施する。各変更には影
+響範囲、リスク、ロールバック方針を明記する。理由: 大規模一括変更は見落としと回帰の
+温床になるため。
 
-### [PRINCIPLE_5_NAME]
-<!-- Example: V. Observability, VI. Versioning & Breaking Changes, VII. Simplicity -->
-[PRINCIPLE_5_DESCRIPTION]
-<!-- Example: Text I/O ensures debuggability; Structured logging required; Or: MAJOR.MINOR.BUILD format; Or: Start simple, YAGNI principles -->
+### V. 文書の日本語統一
+仕様書、計画書、タスク、レビュー記録、運用手順などのプロジェクト文書は日本語で作成
+する。英語の識別子や外部仕様引用が必要な場合でも、判断根拠と運用説明は日本語で補足
+する。理由: 認識齟齬を減らし、レビュー品質を安定化するため。
 
-## [SECTION_2_NAME]
-<!-- Example: Additional Constraints, Security Requirements, Performance Standards, etc. -->
+## 品質基準
 
-[SECTION_2_CONTENT]
-<!-- Example: Technology stack requirements, compliance standards, deployment policies, etc. -->
+- マージ前にフォーマット、lint、型検査(利用時)、自動テストを実行し、結果を記録する。
+- 例外的にルールを抑制する場合は、範囲限定の理由を記録する。
+- 状態遷移、承認判定、データ検証などの高リスク領域には負ケーステストを必須とする。
+- 依存追加や公開インターフェース変更時は互換性影響と移行手順を明示する。
 
-## [SECTION_3_NAME]
-<!-- Example: Development Workflow, Review Process, Quality Gates, etc. -->
+## 開発フローと品質ゲート
 
-[SECTION_3_CONTENT]
-<!-- Example: Code review requirements, testing gates, deployment approval process, etc. -->
+1. 仕様は機能要件、測定可能な成功基準、品質要件を必須とする。
+2. 計画は憲章チェックで各原則に対応する技術的対策を明示する。
+3. タスクはテスト先行を前提に分解し、品質ゲート実行タスクを含める。
+4. レビューは回帰リスク、失敗時挙動、要件トレーサビリティを確認する。
+5. すべての主要文書は日本語で管理し、実行手順は再現可能な形で記録する。
 
 ## Governance
-<!-- Example: Constitution supersedes all other practices; Amendments require documentation, approval, migration plan -->
 
-[GOVERNANCE_RULES]
-<!-- Example: All PRs/reviews must verify compliance; Complexity must be justified; Use [GUIDANCE_FILE] for runtime development guidance -->
+この憲章は当リポジトリにおける品質方針の最上位規範とし、矛盾する慣行に優先する。
 
-**Version**: [CONSTITUTION_VERSION] | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]
-<!-- Example: Version: 2.1.1 | Ratified: 2025-06-13 | Last Amended: 2025-07-16 -->
+改定手順:
+1. 変更理由、影響範囲、移行方針を含む pull request を提出する。
+2. メンテナの承認を得る。
+3. 同一変更内で関連テンプレートとガイドを同期更新する。
+
+バージョン規則:
+- MAJOR: 原則の削除や後方非互換な再定義。
+- MINOR: 新原則/新節の追加、または義務の実質的拡張。
+- PATCH: 意味を変えない明確化、文言修正、誤記修正。
+
+準拠確認:
+- 計画レビューおよび pull request レビューで憲章準拠確認を必須とする。
+- 非準拠はマージ前に是正するか、期限付き例外として承認・追跡する。
+
+**Version**: 1.0.0 | **Ratified**: 2026-04-21 | **Last Amended**: 2026-04-21
