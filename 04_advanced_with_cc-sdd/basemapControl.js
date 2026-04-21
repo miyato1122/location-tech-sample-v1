@@ -8,7 +8,7 @@ import { BASEMAP_CATALOG } from './basemapCatalog.js';
  * @param {object} opts
  * @param {HTMLElement} opts.container - basemap-control コンテナ
  * @param {HTMLElement} opts.attributionEl - basemap-attribution エリア
- * @param {{ switchBasemap: (id: string) => import('./basemapToggleService.js').BasemapSwitchResult, getCurrentBasemap: () => string }} opts.service
+ * @param {{ switchBasemap: (id: string) => import('./basemapToggleService.js').BasemapSwitchResult, getCurrentBasemap: () => string, notifyRecovery?: () => void }} opts.service
  */
 export function mountBasemapControl({ container, attributionEl, service }) {
     // 初期状態のボタンを描画
@@ -23,6 +23,9 @@ export function mountBasemapControl({ container, attributionEl, service }) {
         btn.addEventListener('click', () => {
             const result = service.switchBasemap(item.id);
             if (result.changed) {
+                if (typeof service.notifyRecovery === 'function') {
+                    service.notifyRecovery();
+                }
                 _updateActiveState(container, result.current);
                 _updateAttribution(attributionEl, result.current);
             }

@@ -150,3 +150,18 @@ test('初期出典表示が osm の attributionText に一致する', () => {
 
     assert.equal(attributionEl.textContent, osmItem.attributionText);
 });
+
+test('背景切り替え時に出典表示が選択中背景に同期される', () => {
+    installDocumentMock();
+    const container = createDOMElement();
+    const attributionEl = createDOMElement();
+    const service = createServiceMock('osm');
+    const gsiStdItem = BASEMAP_CATALOG.find((c) => c.id === 'gsiStd');
+
+    mountBasemapControl({ container, attributionEl, service });
+
+    const gsiStdBtn = container._children.find((b) => b.dataset.basemapId === 'gsiStd');
+    gsiStdBtn._trigger('click');
+
+    assert.equal(attributionEl.textContent, gsiStdItem.attributionText);
+});

@@ -70,6 +70,8 @@
     .basemap-control {
         bottom: 60px;
         max-width: 110px;
+        max-height: 40vh;
+        overflow-y: auto;
     }
 
     .basemap-control__btn {

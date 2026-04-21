@@ -13,6 +13,7 @@ import distance from '@turf/distance';
 import { useGsiTerrainSource } from 'maplibre-gl-gsi-terrain';
 import { BASEMAP_CATALOG } from './basemapCatalog.js';
 import { createBasemapErrorChannel } from './basemapErrorChannel.js';
+import { bindBasemapErrorPresenter } from './basemapErrorPresenter.js';
 import { createBasemapToggleService } from './basemapToggleService.js';
 import { mountBasemapControl } from './basemapControl.js';
 
@@ -430,6 +431,12 @@ geolocationControl.on('geolocate', (e) => {
 map.on('load', () => {
     const basemapControlEl = document.getElementById('basemap-control');
     const basemapAttributionEl = document.getElementById('basemap-attribution');
+    const basemapErrorEl = document.getElementById('basemap-error');
+
+    if (basemapErrorEl) {
+        bindBasemapErrorPresenter(basemapErrorChannel, basemapErrorEl);
+    }
+
     if (basemapControlEl && basemapAttributionEl) {
         mountBasemapControl({
             container: basemapControlEl,
@@ -437,6 +444,17 @@ map.on('load', () => {
             service: basemapToggleService,
         });
     }
+
+    map.on('error', (event) => {
+        const sourceId = event?.sourceId;
+        if (!sourceId) return;
+        const basemap = BASEMAP_CATALOG.find((item) => item.sourceId === sourceId);
+        if (!basemap) return;
+        basemapToggleService.notifyError(
+            basemap.layerId,
+            '背景地図を表示できませんでした。通信状態を確認してください。',
+        );
+    });
 
     // 背景地図・重ねるタイル地図のコントロール
     const opacity = new OpacityControl({
