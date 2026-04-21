@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="manifest" href="manifest.json" />
+        <link rel="stylesheet" href="./style.css" />
+        <!-- PWA: manifest.json読み込み -->
+        <title>位置情報アプリケーション開発実践編</title>
+    </head>
+    <body>
+        <div id="map"></div>
+        <div id="basemap-switcher" class="map-overlay map-overlay-left"></div>
+        <div id="basemap-attribution" class="map-overlay map-overlay-right"></div>
+        <script type="module" src="./main.js"></script>
+        <script>
+            // PWA: ServiceWorker読み込み
+            if ('serviceWorker' in navigator)
+                navigator.serviceWorker.register('./sw.js');
+        </script>
+    </body>
+</html>
