@@ -437,7 +437,7 @@ map.on('load', () => {
         bindBasemapErrorPresenter(basemapErrorChannel, basemapErrorEl);
     }
 
-    if (basemapControlEl && basemapAttributionEl) {
+    if (basemapControlEl) {
         mountBasemapControl({
             container: basemapControlEl,
             attributionEl: basemapAttributionEl,

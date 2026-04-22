@@ -5,6 +5,8 @@
   - 既存実装は `main.js` の単一スタイル定義に背景地図・ハザード・避難施設・ルートを集約しており、背景地図拡張は同一パターンに沿うのが最小リスク
   - 既存コントロールは左上・右上・右下を使用中で、要件指定の左下配置は機能衝突を回避しやすい
   - OSM/GSI ともに可視出典表示が重要な制約であり、背景切替に連動した attribution 更新を設計上の必須契約にする必要がある
+  - `map.on('load')` 内で背景UIを初期化する既存パターンにより、要件 1.6 の「初期ロード完了後の即時表示」を実装境界として固定できる
+  - `.basemap-control/.basemap-error` の固定配置と低い `z-index` は、要件 3.4 の初期ビューポート操作可能性を阻害しうるため、狭画面検証を強化する必要がある
 
 ## Research Log
 ### 既存拡張ポイントの確認
@@ -28,6 +30,19 @@
   - 本設計では「表示中背景地図に対応した出典を常時可視」を契約化
   - オフライン配信や事前大量取得は本spec境界外として固定
 
+### 初期表示と UI 操作可能性の確認
+- **Context**: 「背景地図切り替え機能が画面に表示されない」不具合の再発防止として、要件 1.6 / 3.4 を設計へ反映するため
+- **Sources Consulted**: `main.js`, `basemapControl.js`, `style.css`, `index.html`, `basemapToggleService.js`
+- **Findings**:
+  - `#basemap-control` / `#basemap-attribution` / `#basemap-error` は `index.html` に常設される
+  - `map.on('load')` 完了後に `mountBasemapControl` が呼ばれ、追加操作なしで UI を描画する
+  - `.basemap-control` / `.basemap-error` は absolute 配置で `z-index: 1` のため、狭画面で他UIと重なる余地がある
+  - エラー通知は `map.on('error') -> notifyError` で表示できるが、自動フォールバック切替は設計対象外
+- **Implications**:
+  - 設計では「load 後即時マウント」を必須契約化し、テストで 1.6 を明示的に検証する
+  - 3.4 は「少なくとも1選択肢が操作可能」を UI 配置検証で担保する
+  - 4.3 は「判別可能な失敗表示」を満たしつつ、復旧戦略は通知ベース（自動代替切替なし）とする
+
 ## Architecture Pattern Evaluation
 | Option | Description | Strengths | Risks / Limitations | Notes |
 |--------|-------------|-----------|---------------------|-------|
@@ -47,14 +62,14 @@
 - **Follow-up**: 切替時の表示状態維持と attribution 更新を結合テストで確認
 
 ### Decision: 左下に専用 BasemapControl を配置
-- **Context**: Requirement 1.1, 3.1, 3.3
+- **Context**: Requirement 1.1, 1.6, 3.1, 3.3, 3.4
 - **Alternatives Considered**:
   1. 既存 OpacityControl への統合
   2. 専用コントロール追加
 - **Selected Approach**: 左下専用コントロールを追加
 - **Rationale**: 既存左上/右上の責務分離を保ち、操作競合を抑える
 - **Trade-offs**: UI要素が増えるため狭画面での表示配慮が必要
-- **Follow-up**: モバイル幅での視認性確認をテスト戦略に明記
+- **Follow-up**: モバイル幅で「初期表示直後に少なくとも1選択肢が操作可能」をテスト戦略に明記
 
 ### Decision: 出典表示は背景選択状態に同期
 - **Context**: Requirement 4.1, 4.2
@@ -65,6 +80,16 @@
 - **Rationale**: 利用条件順守と利用者理解の両立
 - **Trade-offs**: 表示ロジックが増える
 - **Follow-up**: 表示失敗時メッセージと併せたUX確認
+
+### Decision: 表示失敗時は通知優先で復旧導線を維持
+- **Context**: Requirement 4.3 と既存実装の整合（利用者が失敗を判別できること）
+- **Alternatives Considered**:
+  1. 自動的に別背景へフォールバック
+  2. 失敗状態を通知し、利用者が再選択できる状態を維持
+- **Selected Approach**: 通知ベースを採用し、背景選択UIの操作可能性を維持する
+- **Rationale**: 既存実装の副作用を最小化し、誤った自動切替による利用者混乱を避ける
+- **Trade-offs**: 回復は利用者操作に依存する
+- **Follow-up**: 失敗通知表示中でも背景選択ボタンが操作可能であることを結合テストで確認
 
 ### Decision: Synthesis outcomes
 - **Context**: 設計合成（Generalization / Build vs Adopt / Simplification）
@@ -83,6 +108,7 @@
 - 背景切替で既存表示状態が崩れるリスク — 切替前後でハザード・避難施設・ルート状態の非回帰テストを必須化
 - 出典表示漏れリスク — 背景種別ごとの出典マッピングを必須入力にし、欠落時は切替不成立として扱う
 - 狭画面でコントロールが地図閲覧を阻害するリスク — 左下UIの最小幅・折返し・省スペース表示を設計要件に含める
+- 初期表示で UI が見えても操作不能になるリスク — ビューポート別に「1つ以上の選択肢がクリック可能」を検証項目として固定する
 
 ## References
 - [OSM Tile Usage Policy](https://operations.osmfoundation.org/policies/tiles/) — OSMタイル利用条件と attribution 条件

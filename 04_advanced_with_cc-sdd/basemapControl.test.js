@@ -165,3 +165,19 @@ test('背景切り替え時に出典表示が選択中背景に同期される',
 
     assert.equal(attributionEl.textContent, gsiStdItem.attributionText);
 });
+
+test('出典表示エリアがなくても背景地図ボタンは初期表示される', () => {
+    installDocumentMock();
+    const container = createDOMElement();
+    const service = createServiceMock('osm');
+
+    assert.doesNotThrow(() => {
+        mountBasemapControl({
+            container,
+            attributionEl: null,
+            service,
+        });
+    });
+
+    assert.equal(container._children.length, 3);
+});

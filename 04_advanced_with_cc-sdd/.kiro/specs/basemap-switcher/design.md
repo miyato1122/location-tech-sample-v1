@@ -81,15 +81,29 @@ graph TB
 ### Directory Structure
 ```
 /
-├── main.js      # 地図スタイル定義、背景切替サービス、コントロール登録
-├── style.css    # 背景切替コントロールの見た目と狭画面調整
-└── index.html   # 既存エントリ（機能追加では原則変更なし）
+├── main.js                   # Map 初期化、load/error イベント結線、既存機能との統合
+├── basemapCatalog.js         # 背景候補3種の定義（id/source/layer/出典）
+├── basemapToggleService.js   # 背景排他切替と非背景レイヤー非干渉制御
+├── basemapControl.js         # 左下UIの生成、初期選択状態、出典同期呼び出し
+├── basemapErrorChannel.js    # 背景表示失敗通知の publish/subscribe
+├── basemapErrorPresenter.js  # 失敗表示と復旧表示の UI 反映
+├── style.css                 # 背景UI/出典/失敗表示の位置・重なり・狭画面調整
+├── index.html                # basemap-control / attribution / error マウント点
+├── basemap*.test.js          # 背景機能ユニット/結合テスト群
+└── package.json              # テスト実行エントリ定義
 ```
 
 ### Modified Files
-- `main.js` — 背景source/layer追加、排他切替ロジック、左下コントロール、出典表示同期、失敗時表示
-- `style.css` — 背景切替UIのレイアウト・選択状態・狭画面時の表示制約
-- `index.html` — 必要時のみコントロール表示に関わる最小マークアップ補助
+- `main.js` — `map.on('load')` 完了後に UI を即時マウントし、`map.on('error')` を背景失敗通知へ結線
+- `basemapCatalog.js` — 背景候補の契約（識別子・表示名・source/layer・出典）を一元管理
+- `basemapToggleService.js` — 排他切替・無効操作維持・既存レイヤー非干渉を実装
+- `basemapControl.js` — 選択肢描画、選択中強調、初期表示直後の操作可能状態を保証
+- `basemapErrorChannel.js` — 背景エラー伝播契約を提供
+- `basemapErrorPresenter.js` — 判別可能な失敗表示と復旧時クリアを提供
+- `style.css` — 左下 UI の可視性、狭画面での操作阻害回避、重なり制御
+- `index.html` — `#basemap-control` / `#basemap-attribution` / `#basemap-error` の配置
+- `basemapControl.test.js` ほか `basemap*.test.js` — 要件 1.x/2.x/3.x/4.x の回帰検証
+- `package.json` — 背景機能テスト実行を含む test スクリプト定義
 
 ## System Flows
 
@@ -118,13 +132,15 @@ sequenceDiagram
 | 1.3 | 選択背景を表示 | BasemapToggleService | Service | System Flow |
 | 1.4 | 背景は常に1種類 | BasemapToggleService | Service | System Flow |
 | 1.5 | 無効操作時に維持 | BasemapToggleService | Service | System Flow |
+| 1.6 | 初期ロード完了直後にUI表示 | BasemapControl, main.js load hook | State/Event | System Flow |
 | 2.1 | ハザード表示維持 | BasemapToggleService | Service | System Flow |
 | 2.2 | 避難施設表示維持 | BasemapToggleService | Service | System Flow |
 | 2.3 | 現在地連動表示継続 | BasemapToggleService | Service | System Flow |
 | 2.4 | 再読み込みなし継続操作 | BasemapControl | State | System Flow |
 | 3.1 | 識別可能な名称表示 | BasemapControl | State | - |
 | 3.2 | 選択中状態の視覚区別 | BasemapControl | State | - |
-| 3.3 | 狭画面で閲覧阻害しない | BasemapControlStyle | State | - |
+| 3.3 | 狭画面で閲覧阻害しない | BasemapControl | State | - |
+| 3.4 | 初期ビューポートで1操作以上可能 | BasemapControl | State | - |
 | 4.1 | 表示中背景の出典表示 | AttributionPresenter | State | System Flow |
 | 4.2 | 切替時に出典更新 | AttributionPresenter | Service/State | System Flow |
 | 4.3 | 表示失敗時の判別可能表示 | BasemapErrorPresenter | State | System Flow |
@@ -135,7 +151,7 @@ sequenceDiagram
 |-----------|--------------|--------|--------------|--------------------------|-----------|
 | BasemapCatalog | Config | 背景候補の正規定義 | 1.2, 4.1, 4.2 | Map style source/layer (P0) | State |
 | BasemapToggleService | Logic | 背景の排他切替と非回帰維持 | 1.3, 1.4, 1.5, 2.1, 2.2, 2.3 | MapLibre API (P0) | Service |
-| BasemapControl | UI | 左下UIと選択状態表示 | 1.1, 2.4, 3.1, 3.2, 3.3 | BasemapToggleService (P0) | State |
+| BasemapControl | UI | 左下UIと選択状態表示 | 1.1, 1.6, 2.4, 3.1, 3.2, 3.3, 3.4 | BasemapToggleService (P0) | State |
 | AttributionPresenter | UI | 背景連動の出典表示 | 4.1, 4.2 | BasemapCatalog (P0) | State |
 | BasemapErrorPresenter | UI | 背景表示失敗の可視化 | 4.3 | BasemapToggleService (P1) | State |
 
@@ -189,12 +205,14 @@ type BasemapSwitchResult = {
 | Field | Detail |
 |-------|--------|
 | Intent | 左下に背景切替UIを表示し選択状態を明示 |
-| Requirements | 1.1, 2.4, 3.1, 3.2, 3.3 |
+| Requirements | 1.1, 1.6, 2.4, 3.1, 3.2, 3.3, 3.4 |
 
 **Responsibilities & Constraints**
 - 3選択肢を識別可能名称で表示
 - 選択中項目を視覚的に区別
+- map load 完了直後に追加操作なしでコントロールを表示
 - 狭画面で地図閲覧を阻害しない表示密度を維持
+- 初期ビューポートで少なくとも1選択肢の操作可能状態を維持
 
 **Dependencies**
 - Inbound: User interaction (P0)
@@ -204,9 +222,9 @@ type BasemapSwitchResult = {
 **Contracts**: Service [ ] / API [ ] / Event [ ] / Batch [ ] / State [x]
 
 **Implementation Notes**
-- Integration: 既存左上/右上コントロールと重ならない左下配置
-- Validation: 主要画面幅で重なり・タップ不能がないこと
-- Risks: 小画面での視認性低下
+- Integration: `map.on('load')` で `#basemap-control` と `#basemap-attribution` を即時初期化し、再読み込み不要で利用可能にする
+- Validation: 初期表示直後と主要画面幅で、少なくとも1つの選択肢がクリック/タップ可能であること
+- Risks: 固定配置のため小画面で他コントロールと重なる可能性（`z-index` と配置の監視が必要）
 
 #### AttributionPresenter / BasemapErrorPresenter
 
@@ -267,6 +285,7 @@ type BasemapSwitchResult = {
 ### Unit Tests
 - 1.3/1.4: 切替後に可視背景が1件のみになる
 - 1.5: 無効選択で `currentBasemap` が不変
+- 1.6: map load 完了後に追加操作なしで `#basemap-control` が表示される
 - 4.2: 切替結果に応じて出典表示値が更新される
 
 ### Integration Tests
@@ -279,6 +298,7 @@ type BasemapSwitchResult = {
 - 1.1/3.1: 左下UI表示と3選択肢名称の可視確認
 - 3.2: 選択中項目の視覚差を確認
 - 3.3: 狭画面で地図操作を阻害しないことを確認
+- 3.4: 初期ビューポート直後に少なくとも1選択肢が操作可能であることを確認
 - 2.4: 背景切替時に再読み込みなしで操作継続できる
 
 ### Performance/Load (if applicable)

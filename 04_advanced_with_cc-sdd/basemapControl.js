@@ -7,7 +7,7 @@ import { BASEMAP_CATALOG } from './basemapCatalog.js';
 /**
  * @param {object} opts
  * @param {HTMLElement} opts.container - basemap-control コンテナ
- * @param {HTMLElement} opts.attributionEl - basemap-attribution エリア
+ * @param {HTMLElement | null | undefined} opts.attributionEl - basemap-attribution エリア
  * @param {{ switchBasemap: (id: string) => import('./basemapToggleService.js').BasemapSwitchResult, getCurrentBasemap: () => string, notifyRecovery?: () => void }} opts.service
  */
 export function mountBasemapControl({ container, attributionEl, service }) {
@@ -27,14 +27,18 @@ export function mountBasemapControl({ container, attributionEl, service }) {
                     service.notifyRecovery();
                 }
                 _updateActiveState(container, result.current);
-                _updateAttribution(attributionEl, result.current);
+                if (attributionEl) {
+                    _updateAttribution(attributionEl, result.current);
+                }
             }
         });
         container.appendChild(btn);
     }
 
     // 初期出典表示
-    _updateAttribution(attributionEl, service.getCurrentBasemap());
+    if (attributionEl) {
+        _updateAttribution(attributionEl, service.getCurrentBasemap());
+    }
 }
 
 /**
