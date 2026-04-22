@@ -1,20 +1,21 @@
 {
-  "name": "02_advanced",
-  "private": true,
-  "version": "0.0.0",
+  "name": "nuxt-apps",
   "type": "module",
+  "private": true,
   "scripts": {
-    "dev": "vite",
-    "build": "vite build --base=./",
-    "preview": "vite preview"
-  },
-  "devDependencies": {
-    "vite": "^3.2.0"
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare"
   },
   "dependencies": {
-    "@turf/distance": "^6.5.0",
-    "maplibre-gl": "^2.4.0",
-    "maplibre-gl-gsi-terrain": "^0.0.2",
-    "maplibre-gl-opacity": "^1.4.0"
+    "@turf/distance": "^7.3.4",
+    "maplibre-gl": "^5.23.0",
+    "maplibre-gl-gsi-terrain": "^2.3.2",
+    "maplibre-gl-opacity": "^1.8.0",
+    "nuxt": "^4.4.2",
+    "vue": "^3.5.32",
+    "vue-router": "^5.0.4"
   }
 }

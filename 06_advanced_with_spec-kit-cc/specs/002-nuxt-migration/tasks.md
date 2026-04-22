@@ -17,9 +17,9 @@
 
 **Purpose**: nuxt-apps ディレクトリの作成と基本設定
 
-- [ ] T001 `nuxt-apps/` ディレクトリに `npx nuxi@latest init nuxt-apps` を実行してNuxtプロジェクトを初期化する（パッケージマネージャー: npm）
-- [ ] T002 `nuxt-apps/nuxt.config.ts` を編集して `ssr: false` を設定し、title/viewport の head 設定を追加する
-- [ ] T003 [P] `nuxt-apps/assets/css/main.css` を新規作成し、現行 `style.css`（`#basemap-control` および `#tile-error-message` のスタイル）の内容を移行する
+- [x] T001 `nuxt-apps/` ディレクトリに `npx nuxi@latest init nuxt-apps` を実行してNuxtプロジェクトを初期化する（パッケージマネージャー: npm）
+- [x] T002 `nuxt-apps/nuxt.config.ts` を編集して `ssr: false` を設定し、title/viewport の head 設定を追加する
+- [x] T003 [P] `nuxt-apps/assets/css/main.css` を新規作成し、現行 `style.css`（`#basemap-control` および `#tile-error-message` のスタイル）の内容を移行する
 
 ---
 
@@ -29,12 +29,12 @@
 
 **⚠️ CRITICAL**: このフェーズ完了後にユーザーストーリーの実装を開始できる
 
-- [ ] T004 `nuxt-apps/` で `npm install maplibre-gl@latest` を実行して maplibre-gl を最新安定版へ更新する
-- [ ] T005 [P] `nuxt-apps/` で `npm install maplibre-gl-opacity@latest` を実行する
-- [ ] T006 [P] `nuxt-apps/` で `npm install maplibre-gl-gsi-terrain@latest` を実行する
-- [ ] T007 [P] `nuxt-apps/` で `npm install @turf/distance@latest` を実行する
-- [ ] T008 `nuxt-apps/nuxt.config.ts` の `css` 配列に `maplibre-gl/dist/maplibre-gl.css`・`maplibre-gl-opacity/dist/maplibre-gl-opacity.css`・`~/assets/css/main.css` を追加する
-- [ ] T009 `public/skhb/` ディレクトリとその中のタイルファイルを `nuxt-apps/public/skhb/` にコピーする（`cp -r ../public/skhb ./public/skhb`）
+- [x] T004 `nuxt-apps/` で `npm install maplibre-gl@latest` を実行して maplibre-gl を最新安定版へ更新する
+- [x] T005 [P] `nuxt-apps/` で `npm install maplibre-gl-opacity@latest` を実行する
+- [x] T006 [P] `nuxt-apps/` で `npm install maplibre-gl-gsi-terrain@latest` を実行する
+- [x] T007 [P] `nuxt-apps/` で `npm install @turf/distance@latest` を実行する
+- [x] T008 `nuxt-apps/nuxt.config.ts` の `css` 配列に `maplibre-gl/dist/maplibre-gl.css`・`maplibre-gl-opacity/dist/maplibre-gl-opacity.css`・`~/assets/css/main.css` を追加する
+- [x] T009 `public/skhb/` ディレクトリとその中のタイルファイルを `nuxt-apps/public/skhb/` にコピーする（`cp -r ../public/skhb ./public/skhb`）
 
 **Checkpoint**: 依存ライブラリ準備完了 → ユーザーストーリーの実装を開始できる
 
@@ -48,17 +48,17 @@
 
 ### Implementation for User Story 1
 
-- [ ] T010 [US1] `nuxt-apps/components/TheMap.vue` を新規作成し、`<template>` に `<div id="map" style="height:100vh">`・背景地図ラジオボタン UI・エラーメッセージ div を実装する
-- [ ] T011 [US1] `nuxt-apps/components/TheMap.vue` の `<script setup>` に `onMounted()` を追加し、現行 `main.js` の `new maplibregl.Map({...})` 設定（sources・layers 全定義）を移植する。skhb タイル URL は `/skhb/{z}/{x}/{y}.pbf` 形式に変更する
-- [ ] T012 [US1] `nuxt-apps/components/TheMap.vue` に `import { addProtocol } from 'maplibre-gl'` の named import を追加し、`useGsiTerrainSource(addProtocol)` 形式で GSI地形ソースと hillshade レイヤーを `map.on('load')` 内に実装する（research.md 参照）
-- [ ] T013 [US1] `nuxt-apps/components/TheMap.vue` の `map.on('load')` に OpacityControl（ハザードマップ用・避難場所用それぞれ）を追加し、`map.addControl` で左上・右上に配置する
-- [ ] T014 [US1] `nuxt-apps/components/TheMap.vue` に GeolocateControl を追加し、`_watchState` の代わりに `geolocationControl.on('trackuserlocationend', () => { userLocation = null })` イベントリスナーを使用して現在地管理を実装する（research.md 参照）
-- [ ] T015 [US1] `nuxt-apps/components/TheMap.vue` の `map.on('click')` に避難場所のポップアップ表示ロジックを実装する
-- [ ] T016 [US1] `nuxt-apps/components/TheMap.vue` の `map.on('mousemove')` にカーソル変更ロジックを実装する
-- [ ] T017 [US1] `nuxt-apps/components/TheMap.vue` の `map.on('render')` に最寄り避難施設へのルートライン描画ロジックを実装する。`nearestFeature._geometry.coordinates` を `nearestFeature.geometry.coordinates` に修正する（research.md 参照）
-- [ ] T018 [US1] `nuxt-apps/components/TheMap.vue` に `onUnmounted(() => map.remove())` を追加してメモリリークを防ぐ
-- [ ] T019 [US1] `nuxt-apps/pages/index.vue` を新規作成し、`<TheMap />` をフルスクリーンで表示する
-- [ ] T020 [US1] `cd nuxt-apps && npm run dev` を起動してブラウザで `http://localhost:3000` を開き、quickstart.md のチェックリスト全項目（地図表示・背景地図切り替え・ハザードマップ・避難場所・GSI地形）を目視確認する
+- [x] T010 [US1] `nuxt-apps/app/components/TheMap.vue` を新規作成し、`<template>` に `<div id="map" style="height:100vh">`・背景地図ラジオボタン UI・エラーメッセージ div を実装する
+- [x] T011 [US1] `nuxt-apps/app/components/TheMap.vue` の `<script setup>` に `onMounted()` を追加し、現行 `main.js` の `new maplibregl.Map({...})` 設定（sources・layers 全定義）を移植する。skhb タイル URL は `/skhb/{z}/{x}/{y}.pbf` 形式に変更する
+- [x] T012 [US1] `nuxt-apps/app/components/TheMap.vue` に `import { addProtocol } from 'maplibre-gl'` の named import を追加し、`useGsiTerrainSource(addProtocol)` 形式で GSI地形ソースと hillshade レイヤーを `map.on('load')` 内に実装する（research.md 参照）
+- [x] T013 [US1] `nuxt-apps/app/components/TheMap.vue` の `map.on('load')` に OpacityControl（ハザードマップ用・避難場所用それぞれ）を追加し、`map.addControl` で左上・右上に配置する
+- [x] T014 [US1] `nuxt-apps/app/components/TheMap.vue` に GeolocateControl を追加し、`_watchState` の代わりに `geolocationControl.on('trackuserlocationend', () => { userLocation = null })` イベントリスナーを使用して現在地管理を実装する（research.md 参照）
+- [x] T015 [US1] `nuxt-apps/app/components/TheMap.vue` の `map.on('click')` に避難場所のポップアップ表示ロジックを実装する
+- [x] T016 [US1] `nuxt-apps/app/components/TheMap.vue` の `map.on('mousemove')` にカーソル変更ロジックを実装する
+- [x] T017 [US1] `nuxt-apps/app/components/TheMap.vue` の `map.on('render')` に最寄り避難施設へのルートライン描画ロジックを実装する。`nearestFeature._geometry.coordinates` を `nearestFeature.geometry.coordinates` に修正する（research.md 参照）
+- [x] T018 [US1] `nuxt-apps/app/components/TheMap.vue` に `onUnmounted(() => map.remove())` を追加してメモリリークを防ぐ
+- [x] T019 [US1] `nuxt-apps/app/pages/index.vue` を新規作成し、`<TheMap />` をフルスクリーンで表示する
+- [x] T020 [US1] `cd nuxt-apps && npm run dev` を起動してブラウザで `http://localhost:3000` を開き、quickstart.md のチェックリスト全項目（地図表示・背景地図切り替え・ハザードマップ・避難場所・GSI地形）を目視確認する
 
 **Checkpoint**: nuxt-apps で全機能が動作することをブラウザで確認済み
 
@@ -72,9 +72,9 @@
 
 ### Implementation for User Story 2
 
-- [ ] T021 [US2] `cd nuxt-apps && npm run dev` を起動したブラウザのコンソールで、廃止予定APIの警告・エラーが表示されないことを確認する。問題があれば `nuxt-apps/components/TheMap.vue` の該当箇所を修正する
-- [ ] T022 [US2] `cd nuxt-apps && npm run build` を実行してプロダクションビルドがエラーゼロで完了することを確認する
-- [ ] T023 [US2] `cd nuxt-apps && npm run preview` を実行してビルド成果物が正常に動作することをブラウザで確認する
+- [x] T021 [US2] `cd nuxt-apps && npm run dev` を起動したブラウザのコンソールで、廃止予定APIの警告・エラーが表示されないことを確認する。問題があれば `nuxt-apps/components/TheMap.vue` の該当箇所を修正する
+- [x] T022 [US2] `cd nuxt-apps && npm run build` を実行してプロダクションビルドがエラーゼロで完了することを確認する
+- [x] T023 [US2] `cd nuxt-apps && npm run preview` を実行してビルド成果物が正常に動作することをブラウザで確認する
 
 **Checkpoint**: 最新ライブラリで警告なし・ビルド成功を確認済み
 
@@ -90,11 +90,11 @@
 
 ### Implementation for User Story 3
 
-- [ ] T024 [US3] プロジェクトルートのバニラJS固有ファイル（`index.html`, `main.js`, `style.css`）を削除する
-- [ ] T025 [US3] ルートの `package.json` を削除し、`nuxt-apps/package.json` および `nuxt-apps/package-lock.json` をプロジェクトルートにコピーする
-- [ ] T026 [US3] `nuxt-apps/pages/`, `nuxt-apps/components/`, `nuxt-apps/assets/`, `nuxt-apps/public/skhb/`, `nuxt-apps/nuxt.config.ts` をプロジェクトルートにコピー/移動する
-- [ ] T027 [US3] プロジェクトルートで `npm install` を実行して依存ライブラリをインストールする
-- [ ] T028 [US3] プロジェクトルートで `npm run dev` を実行して動作確認し、全機能が nuxt-apps と同等に動作することをブラウザで確認する
+- [x] T024 [US3] プロジェクトルートのバニラJS固有ファイル（`index.html`, `main.js`, `style.css`）を削除する
+- [x] T025 [US3] ルートの `package.json` を削除し、`nuxt-apps/package.json` および `nuxt-apps/package-lock.json` をプロジェクトルートにコピーする
+- [x] T026 [US3] `nuxt-apps/pages/`, `nuxt-apps/components/`, `nuxt-apps/assets/`, `nuxt-apps/public/skhb/`, `nuxt-apps/nuxt.config.ts` をプロジェクトルートにコピー/移動する
+- [x] T027 [US3] プロジェクトルートで `npm install` を実行して依存ライブラリをインストールする
+- [x] T028 [US3] プロジェクトルートで `npm run dev` を実行して動作確認し、全機能が nuxt-apps と同等に動作することをブラウザで確認する
 
 **Checkpoint**: プロジェクトルートから単一の Nuxt 構成で全機能が動作することを確認済み
 
@@ -104,8 +104,8 @@
 
 **Purpose**: 移行後の整理と最終確認
 
-- [ ] T029 [P] `nuxt-apps/` ディレクトリをプロジェクトルートへの置き換え完了後に削除する（US3完了後）
-- [ ] T030 プロジェクトルートの `.gitignore` に `.nuxt/`, `.output/` を追加する（Nuxtのビルド成果物を除外）
+- [x] T029 [P] `nuxt-apps/` ディレクトリをプロジェクトルートへの置き換え完了後に削除する（US3完了後）
+- [x] T030 プロジェクトルートの `.gitignore` に `.nuxt/`, `.output/` を追加する（Nuxtのビルド成果物を除外）
 - [ ] T031 変更内容を git add・git commit する（`git add` で specs/, nuxt-apps削除後のルートファイルを追加）
 
 ---
