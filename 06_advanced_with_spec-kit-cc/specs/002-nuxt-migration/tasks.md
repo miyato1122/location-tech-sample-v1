@@ -106,7 +106,7 @@
 
 - [x] T029 [P] `nuxt-apps/` ディレクトリをプロジェクトルートへの置き換え完了後に削除する（US3完了後）
 - [x] T030 プロジェクトルートの `.gitignore` に `.nuxt/`, `.output/` を追加する（Nuxtのビルド成果物を除外）
-- [ ] T031 変更内容を git add・git commit する（`git add` で specs/, nuxt-apps削除後のルートファイルを追加）
+- [x] T031 変更内容を git add・git commit する（`git add` で specs/, nuxt-apps削除後のルートファイルを追加）
 
 ---
 
