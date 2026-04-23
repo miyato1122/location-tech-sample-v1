@@ -2,8 +2,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { BASEMAP_CATALOG } from './basemapCatalog.js';
 
-test('背景地図カタログは4件を提供する', () => {
-    assert.equal(BASEMAP_CATALOG.length, 4);
+test('背景地図カタログは5件を提供する', () => {
+    assert.equal(BASEMAP_CATALOG.length, 5);
 });
 
 test('背景地図IDは一意である', () => {

@@ -81,7 +81,7 @@ function installDocumentMock() {
     };
 }
 
-test('mountBasemapControl は4件のボタンを生成する', () => {
+test('mountBasemapControl は5件のボタンを生成する', () => {
     installDocumentMock();
     const container = createDOMElement();
     const attributionEl = createDOMElement();
@@ -89,7 +89,7 @@ test('mountBasemapControl は4件のボタンを生成する', () => {
 
     mountBasemapControl({ container, attributionEl, service });
 
-    assert.equal(container._children.length, 4);
+    assert.equal(container._children.length, 5);
 });
 
 test('各ボタンにカタログの label が設定される', () => {

@@ -79,6 +79,17 @@
 - **Trade-offs**: メタデータとUI表示名の整合管理が必要
 - **Follow-up**: 要件ID 1.x / 3.x / 4.x に対するトレーサビリティ維持
 
+### 地理院地図（淡色）タイルの追加確認
+- **Context**: Requirement 1.2 の背景地図5種目として地理院淡色地図を追加
+- **Sources Consulted**: [地理院タイル一覧](https://maps.gsi.go.jp/development/ichiran.html)
+- **Findings**:
+  - タイルURL: `https://cyberjapandata.gsi.go.jp/xyz/pale/{z}/{x}/{y}.png`
+  - 出典: 地理院タイル（他の地理院系タイルと同一）
+  - ID命名: 既存パターン（gsiStd, gsiPhoto, gsiBlank）に倣い `gsiPale` を採用
+- **Implications**:
+  - 既存の排他レイヤー切替ロジックをそのまま適用可能
+  - `BasemapId` 型に `'gsiPale'` を追加するのみで設計上の変更は最小
+
 ## Risks & Mitigations
 - 背景切替で既存表示状態が崩れるリスク — 切替前後でハザード・避難施設・ルート状態の非回帰テストを必須化
 - 出典表示漏れリスク — 背景種別ごとの出典マッピングを必須入力にし、欠落時は切替不成立として扱う

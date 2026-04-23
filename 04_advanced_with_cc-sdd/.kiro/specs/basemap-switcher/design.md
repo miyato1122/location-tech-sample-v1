@@ -60,7 +60,9 @@ graph TB
     BasemapControl --> BasemapService[Basemap Toggle Service]
     BasemapService --> OsmLayer[OSM Layer]
     BasemapService --> GsiStdLayer[GSI Std Layer]
+    BasemapService --> GsiPaleLayer[GSI Pale Layer]
     BasemapService --> GsiPhotoLayer[GSI Photo Layer]
+    BasemapService --> GsiBlankLayer[GSI Blank Layer]
     BasemapService --> AttributionView[Attribution View]
     HazardControl[Hazard Control] --> HazardLayers[Hazard Layers]
     ShelterControl[Shelter Control] --> ShelterLayers[Shelter Layers]
@@ -114,7 +116,7 @@ sequenceDiagram
 | Requirement | Summary | Components | Interfaces | Flows |
 |-------------|---------|------------|------------|-------|
 | 1.1 | 左下に切替UIを表示 | BasemapControl | State | System Flow |
-| 1.2 | 3種類を選択可能 | BasemapCatalog | State | - |
+| 1.2 | 5種類を選択可能 | BasemapCatalog | State | - |
 | 1.3 | 選択背景を表示 | BasemapToggleService | Service | System Flow |
 | 1.4 | 背景は常に1種類 | BasemapToggleService | Service | System Flow |
 | 1.5 | 無効操作時に維持 | BasemapToggleService | Service | System Flow |
@@ -167,7 +169,7 @@ interface BasemapToggleService {
   getCurrentBasemap(): BasemapId;
 }
 
-type BasemapId = 'osm' | 'gsiStd' | 'gsiPhoto' | 'gsiBlank';
+type BasemapId = 'osm' | 'gsiStd' | 'gsiPale' | 'gsiPhoto' | 'gsiBlank';
 
 type BasemapSwitchResult = {
   changed: boolean;
@@ -239,7 +241,7 @@ type BasemapSwitchResult = {
 - BasemapSelectionState: `currentBasemap`, `availableBasemaps`, `lastError`
 
 ### Logical Data Model
-- 背景候補は固定長コレクション（4件）
+- 背景候補は固定長コレクション（5件）
 - `currentBasemap` は候補集合のいずれか1件
 - `lastError` は表示失敗時のみセットされる任意値
 

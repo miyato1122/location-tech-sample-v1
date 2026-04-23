@@ -46,6 +46,27 @@ export const BASEMAP_CATALOG = [
         attributionText: GSI_ATTRIBUTION,
     },
     {
+        id: 'gsiPale',
+        label: '地理院地図（淡色）',
+        sourceId: 'gsi_pale',
+        layerId: 'gsi-pale-layer',
+        source: {
+            type: 'raster',
+            tiles: ['https://cyberjapandata.gsi.go.jp/xyz/pale/{z}/{x}/{y}.png'],
+            minzoom: 2,
+            maxzoom: 18,
+            tileSize: 256,
+            attribution: GSI_ATTRIBUTION,
+        },
+        layer: {
+            id: 'gsi-pale-layer',
+            source: 'gsi_pale',
+            type: 'raster',
+            layout: { visibility: 'none' },
+        },
+        attributionText: GSI_ATTRIBUTION,
+    },
+    {
         id: 'gsiPhoto',
         label: '航空写真',
         sourceId: 'gsi_photo',
