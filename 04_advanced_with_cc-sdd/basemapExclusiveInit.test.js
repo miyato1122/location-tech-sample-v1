@@ -28,7 +28,7 @@ test('非表示の背景地図は visibility:none を持つ', () => {
     const hiddenItems = BASEMAP_CATALOG.filter(
         (item) => item.layer.layout?.visibility !== 'visible',
     );
-    assert.equal(hiddenItems.length, 2);
+    assert.equal(hiddenItems.length, 3);
     for (const item of hiddenItems) {
         assert.equal(item.layer.layout?.visibility, 'none');
     }

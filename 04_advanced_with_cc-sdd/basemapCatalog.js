@@ -66,6 +66,27 @@ export const BASEMAP_CATALOG = [
         },
         attributionText: GSI_ATTRIBUTION,
     },
+    {
+        id: 'gsiBlank',
+        label: '白地図',
+        sourceId: 'gsi_blank',
+        layerId: 'gsi-blank-layer',
+        source: {
+            type: 'raster',
+            tiles: ['https://cyberjapandata.gsi.go.jp/xyz/blank/{z}/{x}/{y}.png'],
+            minzoom: 2,
+            maxzoom: 18,
+            tileSize: 256,
+            attribution: GSI_ATTRIBUTION,
+        },
+        layer: {
+            id: 'gsi-blank-layer',
+            source: 'gsi_blank',
+            type: 'raster',
+            layout: { visibility: 'none' },
+        },
+        attributionText: GSI_ATTRIBUTION,
+    },
 ];
 
 export const BASEMAP_BY_ID = Object.fromEntries(

@@ -167,7 +167,7 @@ interface BasemapToggleService {
   getCurrentBasemap(): BasemapId;
 }
 
-type BasemapId = 'osm' | 'gsiStd' | 'gsiPhoto';
+type BasemapId = 'osm' | 'gsiStd' | 'gsiPhoto' | 'gsiBlank';
 
 type BasemapSwitchResult = {
   changed: boolean;
@@ -239,7 +239,7 @@ type BasemapSwitchResult = {
 - BasemapSelectionState: `currentBasemap`, `availableBasemaps`, `lastError`
 
 ### Logical Data Model
-- 背景候補は固定長コレクション（3件）
+- 背景候補は固定長コレクション（4件）
 - `currentBasemap` は候補集合のいずれか1件
 - `lastError` は表示失敗時のみセットされる任意値
 
