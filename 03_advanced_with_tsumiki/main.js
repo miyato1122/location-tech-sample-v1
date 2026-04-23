@@ -48,6 +48,14 @@ const map = new maplibregl.Map({
                 attribution:
                     '<a href="https://maps.gsi.go.jp/development/ichiran.html" target="_blank">国土地理院</a>',
             },
+            gsi_blank: {
+                type: 'raster',
+                tiles: ['https://cyberjapandata.gsi.go.jp/xyz/blank/{z}/{x}/{y}.png'],
+                maxzoom: 14,
+                tileSize: 256,
+                attribution:
+                    '<a href="https://maps.gsi.go.jp/development/ichiran.html" target="_blank">国土地理院</a>',
+            },
             // 重ねるハザードマップここから
             hazard_flood: {
                 type: 'raster',
@@ -156,6 +164,12 @@ const map = new maplibregl.Map({
             {
                 id: 'gsi-photo-layer',
                 source: 'gsi_photo',
+                type: 'raster',
+                layout: { visibility: 'none' },
+            },
+            {
+                id: 'gsi-blank-layer',
+                source: 'gsi_blank',
                 type: 'raster',
                 layout: { visibility: 'none' },
             },
@@ -465,6 +479,7 @@ class BasemapSwitcherControl {
             { id: 'osm',       layerId: 'osm-layer',       label: 'OSM' },
             { id: 'gsi_std',   layerId: 'gsi-std-layer',   label: '地理院地図' },
             { id: 'gsi_photo', layerId: 'gsi-photo-layer', label: '航空写真' },
+            { id: 'gsi_blank', layerId: 'gsi-blank-layer', label: '白地図' },
         ];
     }
 

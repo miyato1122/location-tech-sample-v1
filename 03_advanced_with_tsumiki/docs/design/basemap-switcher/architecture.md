@@ -15,7 +15,7 @@
 
 **信頼性**: 🔵 *要件定義書・ユーザヒアリングより*
 
-地図画面左下にカスタムコントロールを配置し、OpenStreetMap・国土地理院地図・国土地理院航空写真の3種類の背景地図をユーザーが切り替えられるようにする。既存の防災マップ（`main.js`）に最小限の変更で統合する。
+地図画面左下にカスタムコントロールを配置し、OpenStreetMap・国土地理院地図・国土地理院航空写真・国土地理院白地図の4種類の背景地図をユーザーが切り替えられるようにする。既存の防災マップ（`main.js`）に最小限の変更で統合する。
 
 ---
 
@@ -60,7 +60,7 @@ BasemapSwitcherControl
 
 ## 背景地図ソース・レイヤー構成 🔵
 
-**信頼性**: 🔵 *ユーザヒアリング（3ソース初期定義方式）より*
+**信頼性**: 🔵 *ユーザヒアリング（4ソース初期定義方式）より*
 
 ### 追加するソース
 
@@ -68,6 +68,7 @@ BasemapSwitcherControl
 |---------|----------|------|-----------|------|
 | `gsi_std` | `https://cyberjapandata.gsi.go.jp/xyz/std/{z}/{x}/{y}.png` | PNG | 18 | 国土地理院 |
 | `gsi_photo` | `https://cyberjapandata.gsi.go.jp/xyz/seamlessphoto/{z}/{x}/{y}.jpg` | JPEG | 18 | 国土地理院 |
+| `gsi_blank` | `https://cyberjapandata.gsi.go.jp/xyz/blank/{z}/{x}/{y}.png` | PNG | 14 | 国土地理院 |
 
 ### 変更するソース
 
@@ -81,6 +82,7 @@ BasemapSwitcherControl
 |-----------|-------|----------------|---------|
 | `gsi-std-layer` | `gsi_std` | `none` | `osm-layer` の直後（`hazard_flood` レイヤーの直前）|
 | `gsi-photo-layer` | `gsi_photo` | `none` | `gsi-std-layer` の直後 |
+| `gsi-blank-layer` | `gsi_blank` | `none` | `gsi-photo-layer` の直後 |
 
 ### 変更するレイヤー
 
@@ -92,21 +94,22 @@ BasemapSwitcherControl
 
 ## 切り替え制御ロジック 🔵
 
-**信頼性**: 🔵 *ユーザヒアリング（3ソース初期定義方式）・REQ-005より*
+**信頼性**: 🔵 *ユーザヒアリング（4ソース初期定義方式）・REQ-005より*
 
-背景地図の切り替えは、3つの背景レイヤーの `visibility` を排他的に切り替えることで実現する。ハザードマップ・避難場所レイヤーは変更しない。
+背景地図の切り替えは、4つの背景レイヤーの `visibility` を排他的に切り替えることで実現する。ハザードマップ・避難場所レイヤーは変更しない。
 
 ```
 切り替え時の処理:
-1. 3つの背景レイヤーをすべて visibility: 'none' に設定
+1. 4つの背景レイヤーをすべて visibility: 'none' に設定
 2. 選択された背景レイヤーのみ visibility: 'visible' に設定
 ```
 
-| 操作 | `osm-layer` | `gsi-std-layer` | `gsi-photo-layer` |
-|-----|------------|----------------|------------------|
-| OSM 選択 | visible | none | none |
-| 地理院地図 選択 | none | visible | none |
-| 航空写真 選択 | none | none | visible |
+| 操作 | `osm-layer` | `gsi-std-layer` | `gsi-photo-layer` | `gsi-blank-layer` |
+|-----|------------|----------------|------------------|------------------|
+| OSM 選択 | visible | none | none | none |
+| 地理院地図 選択 | none | visible | none | none |
+| 航空写真 選択 | none | none | visible | none |
+| 白地図 選択 | none | none | none | visible |
 
 ---
 
@@ -133,6 +136,9 @@ BasemapSwitcherControl
     </button>
     <button class="basemap-switcher-item" data-id="gsi_photo">
       航空写真
+    </button>
+    <button class="basemap-switcher-item" data-id="gsi_blank">
+      白地図
     </button>
   </div>
 </div>

@@ -13,7 +13,7 @@
 
 ## 初期化フロー 🔵
 
-**信頼性**: 🔵 *既存 main.js 実装パターン・ユーザヒアリング（3ソース初期定義方式）より*
+**信頼性**: 🔵 *既存 main.js 実装パターン・ユーザヒアリング（4ソース初期定義方式）より*
 
 **関連要件**: REQ-002, REQ-005
 
@@ -29,7 +29,7 @@ sequenceDiagram
     ML-->>B: マップ初期化完了
     ML->>T: OSM タイル取得（osm-layer: visible）
     T-->>ML: タイル PNG 返却
-    Note over ML: gsi-std-layer: none<br/>gsi-photo-layer: none<br/>（タイル取得なし）
+    Note over ML: gsi-std-layer: none<br/>gsi-photo-layer: none<br/>gsi-blank-layer: none<br/>（タイル取得なし）
     M->>ML: map.addControl(new BasemapSwitcherControl(), 'bottom-left')
     ML-->>B: コントロール DOM を left-bottom に挿入
 ```
@@ -38,7 +38,7 @@ sequenceDiagram
 
 ## 背景地図切り替えフロー 🔵
 
-**信頼性**: 🔵 *ユーザヒアリング（3ソース初期定義方式）・REQ-001〜005より*
+**信頼性**: 🔵 *ユーザヒアリング（4ソース初期定義方式）・REQ-001〜005より*
 
 **関連要件**: REQ-001, REQ-002, REQ-003, REQ-004, REQ-005
 
@@ -50,7 +50,7 @@ sequenceDiagram
     participant T as タイルサーバー（GSI）
 
     U->>C: アイコンボタンをクリック
-    C-->>U: 選択メニューを表示（OSM/地理院地図/航空写真）
+    C-->>U: 選択メニューを表示（OSM/地理院地図/航空写真/白地図）
     U->>C: 「地理院地図」を選択
     C->>ML: setLayoutProperty('osm-layer', 'visibility', 'none')
     C->>ML: setLayoutProperty('gsi-std-layer', 'visibility', 'visible')
@@ -84,18 +84,20 @@ stateDiagram-v2
 
 ## レイヤー可視状態管理フロー 🔵
 
-**信頼性**: 🔵 *ユーザヒアリング（3ソース初期定義方式）・REQ-005より*
+**信頼性**: 🔵 *ユーザヒアリング（4ソース初期定義方式）・REQ-005より*
 
 ```mermaid
 flowchart TD
     A[ユーザーが背景地図を選択] --> B{選択した地図}
-    B -->|OSM| C[osm-layer: visible\ngsi-std-layer: none\ngsi-photo-layer: none]
-    B -->|地理院地図| D[osm-layer: none\ngsi-std-layer: visible\ngsi-photo-layer: none]
-    B -->|航空写真| E[osm-layer: none\ngsi-std-layer: none\ngsi-photo-layer: visible]
-    C --> F[ハザード/避難場所レイヤーは変更なし]
-    D --> F
-    E --> F
-    F --> G[MapLibre GL JS が地図を再描画]
+    B -->|OSM| C[osm-layer: visible\ngsi-std-layer: none\ngsi-photo-layer: none\ngsi-blank-layer: none]
+    B -->|地理院地図| D[osm-layer: none\ngsi-std-layer: visible\ngsi-photo-layer: none\ngsi-blank-layer: none]
+    B -->|航空写真| E[osm-layer: none\ngsi-std-layer: none\ngsi-photo-layer: visible\ngsi-blank-layer: none]
+    B -->|白地図| F[osm-layer: none\ngsi-std-layer: none\ngsi-photo-layer: none\ngsi-blank-layer: visible]
+    C --> G[ハザード/避難場所レイヤーは変更なし]
+    D --> G
+    E --> G
+    F --> G
+    G --> H[MapLibre GL JS が地図を再描画]
 ```
 
 ---
@@ -111,6 +113,7 @@ flowchart LR
     ML[MapLibre GL JS] -->|visibility: visible| OSM[OSM タイルサーバー\nhttps://tile.openstreetmap.org/]
     ML -->|visibility: visible| GSI_STD[地理院タイルサーバー\ncyberjapandata.gsi.go.jp/std/]
     ML -->|visibility: visible| GSI_PHOTO[地理院タイルサーバー\ncyberjapandata.gsi.go.jp/seamlessphoto/]
+    ML -->|visibility: visible| GSI_BLANK[地理院タイルサーバー\ncyberjapandata.gsi.go.jp/blank/]
     ML -.-|visibility: none\n（取得しない）| INACTIVE[非アクティブソース]
 ```
 
@@ -120,13 +123,13 @@ flowchart LR
 
 **信頼性**: 🟡 *MapLibre GL JS の AttributionControl 動作から妥当な推測。実装時に検証が必要*
 
-**注意**: MapLibre GL JS の `AttributionControl` はソースの `visibility` ではなく、ソースの存在を基準に attribution を収集する場合がある。3ソース全てが初期スタイルに存在するため、3つの attribution が常に表示される可能性がある。
+**注意**: MapLibre GL JS の `AttributionControl` はソースの `visibility` ではなく、ソースの存在を基準に attribution を収集する場合がある。4ソース全てが初期スタイルに存在するため、複数の attribution が常に表示される可能性がある。
 
 ```mermaid
 flowchart TD
     A[背景地図切り替え] --> B{AttributionControl の挙動}
     B -->|自動更新の場合| C[表示中レイヤーの出典のみ表示\n✅ 実装簡素]
-    B -->|常時表示の場合| D[3ソースの出典が常時表示\n⚠️ 手動更新が必要]
+    B -->|常時表示の場合| D[4ソースの出典が常時表示\n⚠️ 手動更新が必要]
     D --> E[_switchBasemap 内で\n手動 attribution 更新処理を追加]
 ```
 
