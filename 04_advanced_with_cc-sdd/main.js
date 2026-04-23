@@ -6,6 +6,9 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 import OpacityControl from 'maplibre-gl-opacity';
 import 'maplibre-gl-opacity/dist/maplibre-gl-opacity.css';
 
+// 背景地図切り替えUIスタイル
+import './style.css';
+
 // 地点間の距離を計算するモジュール
 import distance from '@turf/distance';
 
